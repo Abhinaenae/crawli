@@ -1,4 +1,4 @@
-package normalize
+package url
 
 import "testing"
 

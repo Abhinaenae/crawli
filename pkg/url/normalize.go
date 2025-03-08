@@ -1,4 +1,4 @@
-package normalize
+package url
 
 import (
 	"net/url"
@@ -13,5 +13,6 @@ func NormalizeURL(rawURL string) (string, error) {
 
 	normalized := urlData.Host + urlData.Path
 	normalized = strings.TrimSuffix(normalized, "/")
+
 	return normalized, nil
 }
