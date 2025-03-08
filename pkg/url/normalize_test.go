@@ -34,8 +34,8 @@ func TestNormalizeURL(t *testing.T) {
 			expected: "blog.example.org",
 		},
 		{
-			name:     "handle complex path",
-			inputURL: "http://example.net/foo/bar/",
+			name:     "handle complex path with capitals",
+			inputURL: "http://EXAMPLE.net/foo/bar/",
 			expected: "example.net/foo/bar",
 		},
 		{
