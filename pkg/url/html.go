@@ -2,6 +2,8 @@ package url
 
 import (
 	"errors"
+	"io"
+	"net/http"
 	"net/url"
 	"strings"
 
@@ -44,4 +46,27 @@ func GetURLSFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 
 	extractLinks(doc)
 	return urls, nil
+}
+
+func GetHTML(rawURL string) (string, error) {
+	res, err := http.Get(rawURL)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+	if res.StatusCode >= 400 {
+		return "", errors.New("HTTP request failed with status: " + res.Status)
+	}
+
+	contentType := res.Header.Get("Content-Type")
+	if !strings.HasPrefix(contentType, "text/html") {
+		return "", errors.New("invalid content type: " + contentType)
+	}
+	htmlBody, err := io.ReadAll(res.Body)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(htmlBody), nil
 }
