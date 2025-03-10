@@ -12,7 +12,7 @@ import (
 func main() {
 	if len(os.Args) < 4 {
 		fmt.Println("not enough arguments provided")
-		fmt.Println("usage: crawler <baseURL> <maxConcurrency> <maxPages>")
+		fmt.Println("usage: crawli <baseURL> <maxConcurrency> <maxPages>")
 		os.Exit(1)
 	}
 
@@ -46,7 +46,6 @@ func main() {
 	go cfg.CrawlPage(rawBaseURL)
 	cfg.Wg.Wait()
 
-	//PrintReport(cfg.Pages, rawBaseURL)
 	format.PrintReport(cfg.Pages, rawBaseURL)
 
 }
