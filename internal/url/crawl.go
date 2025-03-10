@@ -44,8 +44,6 @@ func (cfg *Config) CrawlPage(rawCurrentURL string) {
 	}
 
 	//Get the HTML from the current URL and find urls
-	fmt.Printf("crawling %s\n", rawCurrentURL)
-
 	htmlBody, err := getHTML(rawCurrentURL)
 	if err != nil {
 		fmt.Printf("error - GetHTML: %v", err)

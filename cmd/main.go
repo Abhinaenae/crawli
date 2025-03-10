@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/abhinaenae/crawli/internal/format"
 	interurl "github.com/abhinaenae/crawli/internal/url"
 )
 
@@ -45,8 +46,7 @@ func main() {
 	go cfg.CrawlPage(rawBaseURL)
 	cfg.Wg.Wait()
 
-	for normalizedURL, count := range cfg.Pages {
-		fmt.Printf("%d - %s\n", count, normalizedURL)
-	}
+	//PrintReport(cfg.Pages, rawBaseURL)
+	format.PrintReport(cfg.Pages, rawBaseURL)
 
 }
