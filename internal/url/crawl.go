@@ -19,7 +19,7 @@ func CrawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	}
 
 	//Get a normalized version of the rawCurrentURL.
-	normalizedCurrentURL, err := NormalizeURL(rawCurrentURL)
+	normalizedCurrentURL, err := normalizeURL(rawCurrentURL)
 	if err != nil {
 		fmt.Printf("Unexpected error: %v", err)
 		return
@@ -45,12 +45,12 @@ func CrawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 	//Get the HTML from the current URL and find urls
 	fmt.Printf("crawling %s\n", rawCurrentURL)
 
-	htmlBody, err := GetHTML(rawCurrentURL)
+	htmlBody, err := getHTML(rawCurrentURL)
 	if err != nil {
 		fmt.Printf("error - GetHTML: %v", err)
 		return
 	}
-	nextURLs, err := GetURLSFromHTML(htmlBody, rawBaseURL)
+	nextURLs, err := getURLSFromHTML(htmlBody, rawBaseURL)
 	if err != nil {
 		fmt.Printf("error - GetURLSFromHTML: %v", err)
 		return

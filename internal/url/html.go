@@ -10,7 +10,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-func GetURLSFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
+func getURLSFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	htmlReader := strings.NewReader(htmlBody)
 	doc, err := html.Parse(htmlReader)
 	if err != nil {
@@ -48,7 +48,7 @@ func GetURLSFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 	return urls, nil
 }
 
-func GetHTML(rawURL string) (string, error) {
+func getHTML(rawURL string) (string, error) {
 	res, err := http.Get(rawURL)
 	if err != nil {
 		return "", err
