@@ -2,10 +2,9 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
-	interurl "github.com/abhinaenae/crawli/pkg/url"
+	interurl "github.com/abhinaenae/crawli/internal/url"
 )
 
 func main() {
@@ -22,10 +21,11 @@ func main() {
 	rawBaseURL := os.Args[1]
 	fmt.Printf("starting crawl of: %s...\n", rawBaseURL)
 
-	htmlBody, err := interurl.GetHTML(rawBaseURL)
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
+	pages := make(map[string]int)
 
-	fmt.Println(htmlBody)
+	interurl.CrawlPage(rawBaseURL, rawBaseURL, pages)
+
+	for normalizedURL, count := range pages {
+		fmt.Printf("%d - %s\n", count, normalizedURL)
+	}
 }
