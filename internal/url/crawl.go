@@ -12,6 +12,10 @@ func (cfg *Config) CrawlPage(rawCurrentURL string) {
 		cfg.Wg.Done()
 	}()
 
+	if cfg.pagesLen() >= cfg.MaxPages {
+		return
+	}
+
 	// Make sure the rawCurrentURL is on the same domain as the rawBaseURL. If it's not, return
 	currentURL, err := url.Parse(rawCurrentURL)
 	if err != nil {
