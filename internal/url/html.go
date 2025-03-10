@@ -10,18 +10,13 @@ import (
 	"golang.org/x/net/html"
 )
 
-func getURLSFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
+func getURLSFromHTML(htmlBody string, baseURL *url.URL) ([]string, error) {
 	htmlReader := strings.NewReader(htmlBody)
 	doc, err := html.Parse(htmlReader)
 	if err != nil {
 		return nil, err
 	}
 	var urls []string
-
-	base, err := url.Parse(rawBaseURL)
-	if err != nil {
-		return nil, errors.New("Couldn't parse base url")
-	}
 
 	var extractLinks func(*html.Node)
 	extractLinks = func(n *html.Node) {
@@ -32,7 +27,7 @@ func getURLSFromHTML(htmlBody, rawBaseURL string) ([]string, error) {
 					parsedURL, err := url.Parse(attr.Val)
 					if err == nil {
 						// Resolve relative URL to absolute
-						resolvedURL := base.ResolveReference(parsedURL)
+						resolvedURL := baseURL.ResolveReference(parsedURL)
 						urls = append(urls, resolvedURL.String())
 					}
 				}

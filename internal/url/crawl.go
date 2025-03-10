@@ -5,16 +5,17 @@ import (
 	"net/url"
 )
 
-func CrawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
+func (cfg *Config) CrawlPage(rawCurrentURL string) {
+	cfg.ConcurrencyControl <- struct{}{}
+	defer func() {
+		<-cfg.ConcurrencyControl
+		cfg.Wg.Done()
+	}()
+
 	// Make sure the rawCurrentURL is on the same domain as the rawBaseURL. If it's not, return
 	currentURL, err := url.Parse(rawCurrentURL)
 	if err != nil {
 		fmt.Printf("Error - crawlPage: couldn't parse URL '%s': %v\n", rawCurrentURL, err)
-		return
-	}
-	baseURL, err := url.Parse(rawBaseURL)
-	if err != nil {
-		fmt.Printf("Error - crawlPage: couldn't parse URL '%s': %v\n", rawBaseURL, err)
 		return
 	}
 
@@ -28,17 +29,13 @@ func CrawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 		return
 	}
 	//increment if visited
-	_, ok := pages[normalizedCurrentURL]
-	if ok {
-		pages[normalizedCurrentURL]++
+	isFirst := cfg.addPageVisit(normalizedCurrentURL)
+	if !isFirst {
 		return
 	}
 
-	//mark as visited
-	pages[normalizedCurrentURL] = 1
-
 	// skip other websites
-	if currentURL.Hostname() != baseURL.Hostname() {
+	if currentURL.Hostname() != cfg.BaseURL.Hostname() {
 		return
 	}
 
@@ -50,7 +47,7 @@ func CrawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 		fmt.Printf("error - GetHTML: %v", err)
 		return
 	}
-	nextURLs, err := getURLSFromHTML(htmlBody, rawBaseURL)
+	nextURLs, err := getURLSFromHTML(htmlBody, cfg.BaseURL)
 	if err != nil {
 		fmt.Printf("error - GetURLSFromHTML: %v", err)
 		return
@@ -58,7 +55,21 @@ func CrawlPage(rawBaseURL, rawCurrentURL string, pages map[string]int) {
 
 	//Recursively crawl each URL on the page
 	for _, nextURL := range nextURLs {
-		CrawlPage(rawBaseURL, nextURL, pages)
+		cfg.Wg.Add(1)
+		go cfg.CrawlPage(nextURL)
 	}
 
+}
+
+func (cfg *Config) addPageVisit(normalizedURL string) bool {
+	cfg.Mu.Lock()
+	defer cfg.Mu.Unlock()
+	_, visited := cfg.Pages[normalizedURL]
+	if visited {
+		cfg.Pages[normalizedURL]++
+		return false
+	}
+	//mark as visited
+	cfg.Pages[normalizedURL] = 1
+	return true
 }

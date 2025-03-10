@@ -19,13 +19,19 @@ func main() {
 	}
 
 	rawBaseURL := os.Args[1]
+	const maxConcurrency = 5
+	cfg, err := interurl.Configure(rawBaseURL, maxConcurrency)
+	if err != nil {
+		fmt.Printf("Error - configure: %v", err)
+		return
+	}
 	fmt.Printf("starting crawl of: %s...\n", rawBaseURL)
+	cfg.Wg.Add(1)
+	go cfg.CrawlPage(rawBaseURL)
+	cfg.Wg.Wait()
 
-	pages := make(map[string]int)
-
-	interurl.CrawlPage(rawBaseURL, rawBaseURL, pages)
-
-	for normalizedURL, count := range pages {
+	for normalizedURL, count := range cfg.Pages {
 		fmt.Printf("%d - %s\n", count, normalizedURL)
 	}
+
 }
