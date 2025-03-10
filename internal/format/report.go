@@ -43,7 +43,7 @@ func PrintReport(pages map[string]int, baseURL string) {
 
 	// Create table
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"URL", "Internal Links"})
+	table.SetHeader([]string{"URL", "Occurrences"})
 	table.SetAutoWrapText(false) // Avoid word wrap issues
 	table.SetBorder(true)
 	table.SetRowSeparator("-")
@@ -59,5 +59,4 @@ func PrintReport(pages map[string]int, baseURL string) {
 
 	// Render table
 	table.Render()
-
 }
